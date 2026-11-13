@@ -234,70 +234,71 @@ function renderMovies(){
 $('refreshMovies').onclick=renderMovies;
 
 const moodData=[
- {name:'Bored',emoji:'🥱',links:[
-  ['New manga releases','Google','new manga releases this week'],
-  ['New music releases','Google','new music releases this week'],
-  ['New movies and shows','Google','new movies and TV shows released this week'],
+ {name:'Bored',emoji:'🥱',symptom:'Under-stimulated, restless, or stuck in a routine.',cure:'Give your brain something new to explore.',links:[
+  ['Discover new manga','Google','new manga releases this week'],
+  ['Fresh music releases','Google','new music releases this week'],
+  ['Movies and shows to discover','Google','new movies and TV shows released this week'],
   ['New games and entertainment','Google','new games entertainment releases this week'],
   ['Interesting articles','Google','interesting new longform articles this week'],
-  ['New anime episodes','Google','new anime episodes this week']
+  ['Latest anime episodes','Google','new anime episodes this week']
  ]},
- {name:'Horny',emoji:'🔥',links:[
+ {name:'Horny',emoji:'🔥',symptom:'Sexual desire or arousal is taking up your attention.',cure:'Choose a private, consensual adult outlet; pornography is optional, not a requirement.',links:[
   ['Pornhub — 18+ adult videos','Pornhub','https://www.pornhub.com/'],
   ['XVideos — 18+ adult videos','XVideos','https://www.xvideos.com/'],
-  ['XVideos Red — 18+ adult videos','XVideos Red','https://www.xvideos.red/'],
   ['XNXX — 18+ adult videos','XNXX','https://www.xnxx.com/'],
   ['RedTube — 18+ adult videos','RedTube','https://www.redtube.com/'],
-  ['Sexual wellness and adult relationships','Google','sexual wellness consent communication adult relationships'],
-  ['Sexual health information','Planned Parenthood','https://www.plannedparenthood.org/learn'],
-  ['Consent and healthy intimacy','RAINN','https://www.rainn.org/articles/what-is-consent']
+  ['Adult dating — meet consenting adults','Google','adult dating sites meet people consensual adults'],
+  ['Sexual wellness and communication','Google','sexual wellness consent communication adult relationships'],
+  ['Sexual health information','Planned Parenthood','https://www.plannedparenthood.org/learn']
  ]},
- {name:'Angry',emoji:'😡',links:[
-  ['Cute pets and animal videos','YouTube','cute pets funny animals'],
-  ['Animal artwork','Google','cute animal illustrations artwork'],
-  ['Heavy metal playlists','YouTube','heavy metal playlist'],
-  ['Thrash and metalcore','YouTube','thrash metal metalcore playlist'],
-  ['High-energy rock','YouTube','loud hard rock workout playlist']
+ {name:'Angry',emoji:'😡',symptom:'Frustration, irritation, or a buildup of intense energy.',cure:'Pair a harmless cute distraction with music that lets you express the intensity.',links:[
+  ['Cute animal pictures','Google','cute baby animals photos'],
+  ['Cute baby pictures','Google','adorable babies laughing smiling photos'],
+  ['Funny pets and animal videos','YouTube','funny cute pets animals videos'],
+  ['Heavy metal for expression','YouTube','heavy metal rage playlist'],
+  ['Thrash metal and metalcore','YouTube','thrash metal metalcore playlist'],
+  ['Hard rock release','YouTube','hard rock angry workout playlist']
  ]},
- {name:'Sad',emoji:'😢',links:[
-  ['Emo and melancholic playlists','YouTube','emo sad alternative playlist'],
-  ['Soft sad music','YouTube','melancholic indie music playlist'],
-  ['World hunger: humanitarian reporting','Google','World Food Programme hunger children latest report'],
-  ['Children affected by conflict','UNICEF','https://www.unicef.org/emergencies'],
-  ['War and humanitarian updates','UN OCHA','https://www.unocha.org/']
+ {name:'Sad',emoji:'😢',symptom:'Low mood, grief, disappointment, or emotional heaviness.',cure:'Choose music that matches the feeling, or find perspective through compassionate humanitarian stories without turning anyone’s suffering into entertainment.',links:[
+  ['Sad emo and melancholic playlists','YouTube','sad emo melancholic music playlist'],
+  ['Soft songs for difficult days','YouTube','sad emotional indie songs playlist'],
+  ['Stories of resilience and recovery','Google','human resilience survival recovery inspiring stories'],
+  ['Humanitarian updates from UNICEF','UNICEF','https://www.unicef.org/emergencies'],
+  ['World Food Programme stories','WFP','https://www.wfp.org/stories'],
+  ['Comforting music and reflection','YouTube','comforting songs for sadness']
  ]},
- {name:'Cheerful',emoji:'😄',links:[
+ {name:'Happy',emoji:'😄',symptom:'Good mood, excitement, gratitude, or a joyful moment.',cure:'Amplify the good feeling with upbeat music and a personal happy-memory moment.',links:[
   ['Popular pop hits','YouTube','popular pop hits playlist'],
-  ['Popular hip-hop','YouTube','popular hip hop playlist'],
-  ['Feel-good music','YouTube','feel good happy music playlist'],
-  ['Positive self-reflection prompts','Google','positive self reflection gratitude prompts'],
-  ['Daily affirmations','Google','positive daily affirmations']
+  ['Hip-hop hits and feel-good rap','YouTube','feel good hip hop hits playlist'],
+  ['Upbeat dance and party music','YouTube','upbeat happy dance party music'],
+  ['Happy memories photo inspiration','Google Images','happy memories photo collage inspiration'],
+  ['Gratitude and positive reflection','Google','gratitude prompts happy memories positive reflection']
  ]},
- {name:'Relaxed',emoji:'😌',links:[
+ {name:'Relaxed',emoji:'😌',symptom:'You feel calm and want to protect that peaceful state.',cure:'Keep the environment gentle with ambient sound, nature, and slow breathing.',links:[
   ['Ambient and calming music','YouTube','calming ambient music'],
   ['Nature sounds','YouTube','rain forest ocean nature sounds'],
   ['Peaceful scenery','YouTube','peaceful nature relaxing scenery'],
   ['Simple breathing exercises','Google','simple guided breathing exercise']
  ]},
- {name:'Energetic',emoji:'⚡',links:[
+ {name:'Energetic',emoji:'⚡',symptom:'You have energy and want somewhere useful to direct it.',cure:'Turn that momentum into movement, rhythm, or a fun challenge.',links:[
   ['Dance and electronic music','YouTube','dance electronic workout playlist'],
   ['Workout motivation','YouTube','high energy workout music'],
   ['Sports highlights','YouTube','latest sports highlights'],
   ['Quick fitness ideas','Google','beginner energizing workout ideas']
  ]},
- {name:'Curious',emoji:'🧠',links:[
+ {name:'Curious',emoji:'🧠',symptom:'Questions, ideas, or a strong desire to understand something.',cure:'Feed your curiosity with reliable explainers and discoveries.',links:[
   ['Science discoveries','Google','latest science discoveries'],
   ['Technology news','Google','latest technology breakthroughs'],
   ['History discoveries','Google','new history archaeology discoveries'],
   ['Interesting explainers','Google','interesting educational explainers']
  ]},
- {name:'Lonely',emoji:'❤️',links:[
+ {name:'Lonely',emoji:'❤️',symptom:'You want connection, company, or to feel understood.',cure:'Find low-pressure connection and comforting reminders that support is available.',links:[
   ['Heartwarming stories','Google','heartwarming human kindness stories'],
   ['Comforting music','YouTube','comforting songs playlist'],
-  ['Friendship communities','Google','positive friendship communities online'],
+  ['Positive friendship communities','Google','positive friendship communities online'],
   ['Mental health support resources','988 Lifeline','https://988lifeline.org/']
  ]},
- {name:'Adventurous',emoji:'🌈',links:[
+ {name:'Adventurous',emoji:'🌈',symptom:'You want novelty, discovery, or a change of scenery.',cure:'Explore somewhere new through travel, documentaries, or outdoor ideas.',links:[
   ['Amazing places','Google','amazing places to visit around the world'],
   ['Travel documentaries','YouTube','travel adventure documentary'],
   ['Outdoor adventures','Google','outdoor adventures near me'],
@@ -325,15 +326,26 @@ function showMood(i){
  const m=moodData[i];
  localStorage.setItem('a17_selected_mood',String(i));
  renderMoodChoices();
- const moodSearch=encodeURIComponent(m.name+' mood music videos ideas');
+ const moodSearch=encodeURIComponent(m.name+' mood music ideas');
  const quickLinks=[
   {name:'YouTube',url:'https://www.youtube.com/results?search_query='+moodSearch},
   {name:'Google',url:'https://www.google.com/search?q='+moodSearch},
   {name:'Reddit',url:'https://www.reddit.com/search/?q='+moodSearch},
   {name:'TikTok',url:'https://www.tiktok.com/search?q='+moodSearch}
  ];
- $('moodResults').innerHTML=`<div class="item"><strong>${m.emoji} ${esc(m.name)}</strong><small>Your mood is selected. These are optional ideas—switch moods whenever you like.</small><div class="row" style="flex-wrap:wrap;margin-top:8px">${quickLinks.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${x.name}</a>`).join('<span>·</span>')}</div></div>`+
+ const memoryPhoto=m.name==='Happy'?'<div class="item"><strong>📸 Add one of your happy memories</strong><small>This photo preview stays in this page on your device; it is not uploaded.</small><input class="field" id="happyMemoryPhoto" type="file" accept="image/*" aria-label="Choose a happy memory photo" style="margin-top:8px"><img id="happyMemoryPreview" alt="Your selected happy memory" style="display:none;width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin-top:10px"></div>':'';
+ $('moodResults').innerHTML=`<div class="item"><strong>${m.emoji} ${esc(m.name)} — Symptom</strong><small>${esc(m.symptom)}</small><div style="margin-top:8px"><strong>🩺 Suggested cure</strong><small>${esc(m.cure)}</small></div><small style="margin-top:8px">These are mood-reset ideas, not medical diagnoses or treatment.</small><div class="row" style="flex-wrap:wrap;margin-top:8px">${quickLinks.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${x.name}</a>`).join('<span>·</span>')}</div></div>`+
+ memoryPhoto+
  m.links.map((x,n)=>{const url=moodUrl(x[1],x[2]);return `<div class="item"><strong>${n+1}. ${esc(x[0])}</strong><small><a href="${url}" target="_blank" rel="noopener">${esc(x[1]==='Google'||x[1]==='YouTube'?'Explore '+x[0]:'Open '+x[1])}</a></small></div>`}).join('');
+ if(m.name==='Happy'){
+  $('happyMemoryPhoto').addEventListener('change',e=>{
+   const file=e.target.files&&e.target.files[0];if(!file)return;
+   if(!file.type.startsWith('image/'))return;
+   const img=$('happyMemoryPreview');
+   if(img.dataset.objectUrl)URL.revokeObjectURL(img.dataset.objectUrl);
+   const objectUrl=URL.createObjectURL(file);img.src=objectUrl;img.dataset.objectUrl=objectUrl;img.style.display='block';
+  });
+ }
  $('moodResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Mood: '+m.name+' — '+a.textContent,a.href)));
 }
 const savedMoodRaw=localStorage.getItem('a17_selected_mood');
