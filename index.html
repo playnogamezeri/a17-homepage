@@ -21,6 +21,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px;ma
 .search input{flex:1;min-width:0;border:0;outline:0;background:transparent;padding:10px 12px;color:#182033;font:inherit}
 .search button{border:0;border-radius:12px;background:#182033;color:white;padding:0 16px;font-weight:700}
 .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:15px}
+.mood-choice{width:100%;min-height:48px;transition:background .15s,border-color .15s}.mood-choice.active{background:var(--accent);border-color:var(--accent);color:white;box-shadow:0 0 0 2px #ffffff22}
 .quick a{display:grid;place-items:center;gap:3px;text-decoration:none;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 4px;font-size:12px}
 .quick b{font-size:20px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
@@ -253,23 +254,42 @@ const moodData=[
   ['Unusual facts and discoveries','Google','unusual discoveries around the world']
  ]}
 ];
+let activeMoodIndex=-1;
 function moodUrl(platform,term){
- if(term.startsWith('https://'))return term;
+ if(/^https?:\\/\\//i.test(term))return term;
  const q=encodeURIComponent(term);
  if(platform==='YouTube')return 'https://www.youtube.com/results?search_query='+q;
+ if(platform==='Reddit')return 'https://www.reddit.com/search/?q='+q;
+ if(platform==='TikTok')return 'https://www.tiktok.com/search?q='+q;
+ if(platform==='Instagram')return 'https://www.instagram.com/explore/search/keyword/?q='+q;
+ if(platform==='X')return 'https://x.com/search?q='+q;
  return 'https://www.google.com/search?q='+q;
 }
 function renderMoodChoices(){
- $('moodChoices').innerHTML=moodData.map((m,i)=>`<button class="pill" data-mood="${i}" style="border-radius:13px;padding:12px 8px;text-align:left">${m.emoji} ${m.name}</button>`).join('');
- $('moodChoices').querySelectorAll('[data-mood]').forEach(b=>b.onclick=()=>showMood(+b.dataset.mood));
+ $('moodChoices').innerHTML=moodData.map((m,i)=>`<button type="button" class="pill mood-choice${i===activeMoodIndex?' active':''}" data-mood="${i}" aria-pressed="${i===activeMoodIndex}" style="border-radius:13px;padding:12px 8px;text-align:left">${m.emoji} ${m.name}</button>`).join('');
+ $('moodChoices').querySelectorAll('[data-mood]').forEach(b=>b.onclick=()=>showMood(Number(b.dataset.mood)));
 }
 function showMood(i){
+ if(!Number.isInteger(i)||i<0||i>=moodData.length)return;
+ activeMoodIndex=i;
  const m=moodData[i];
- $('moodResults').innerHTML=`<div class="item"><strong>${m.emoji} ${m.name}</strong><small>Suggestions selected for this mood. Choose anything that feels right; you can switch moods anytime.</small></div>`+
+ localStorage.setItem('a17_selected_mood',String(i));
+ renderMoodChoices();
+ const moodSearch=encodeURIComponent(m.name+' mood music videos ideas');
+ const quickLinks=[
+  {name:'YouTube',url:'https://www.youtube.com/results?search_query='+moodSearch},
+  {name:'Google',url:'https://www.google.com/search?q='+moodSearch},
+  {name:'Reddit',url:'https://www.reddit.com/search/?q='+moodSearch},
+  {name:'TikTok',url:'https://www.tiktok.com/search?q='+moodSearch}
+ ];
+ $('moodResults').innerHTML=`<div class="item"><strong>${m.emoji} ${esc(m.name)}</strong><small>Your mood is selected. These are optional ideas—switch moods whenever you like.</small><div class="row" style="flex-wrap:wrap;margin-top:8px">${quickLinks.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${x.name}</a>`).join('<span>·</span>')}</div></div>`+
  m.links.map((x,n)=>{const url=moodUrl(x[1],x[2]);return `<div class="item"><strong>${n+1}. ${esc(x[0])}</strong><small><a href="${url}" target="_blank" rel="noopener">${esc(x[1]==='Google'||x[1]==='YouTube'?'Explore '+x[0]:'Open '+x[1])}</a></small></div>`}).join('');
  $('moodResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Mood: '+m.name+' — '+a.textContent,a.href)));
 }
+const savedMood=Number(localStorage.getItem('a17_selected_mood'));
+if(Number.isInteger(savedMood)&&savedMood>=0&&savedMood<moodData.length)activeMoodIndex=savedMood;
 renderMoodChoices();
+if(activeMoodIndex>=0)showMood(activeMoodIndex);
 const vocab=[
 ['Abstruse','Difficult to understand; obscure.','The lecture explored an abstruse mathematical idea.'],
 ['Alacrity','Cheerful readiness or eagerness.','She accepted the challenge with alacrity.'],
