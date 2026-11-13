@@ -256,7 +256,7 @@ const moodData=[
 ];
 let activeMoodIndex=-1;
 function moodUrl(platform,term){
- if(/^https?:\\/\\//i.test(term))return term;
+ if(term.startsWith('https://')||term.startsWith('http://'))return term;
  const q=encodeURIComponent(term);
  if(platform==='YouTube')return 'https://www.youtube.com/results?search_query='+q;
  if(platform==='Reddit')return 'https://www.reddit.com/search/?q='+q;
@@ -286,7 +286,8 @@ function showMood(i){
  m.links.map((x,n)=>{const url=moodUrl(x[1],x[2]);return `<div class="item"><strong>${n+1}. ${esc(x[0])}</strong><small><a href="${url}" target="_blank" rel="noopener">${esc(x[1]==='Google'||x[1]==='YouTube'?'Explore '+x[0]:'Open '+x[1])}</a></small></div>`}).join('');
  $('moodResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Mood: '+m.name+' — '+a.textContent,a.href)));
 }
-const savedMood=Number(localStorage.getItem('a17_selected_mood'));
+const savedMoodRaw=localStorage.getItem('a17_selected_mood');
+const savedMood=savedMoodRaw===null?-1:Number(savedMoodRaw);
 if(Number.isInteger(savedMood)&&savedMood>=0&&savedMood<moodData.length)activeMoodIndex=savedMood;
 renderMoodChoices();
 if(activeMoodIndex>=0)showMood(activeMoodIndex);
