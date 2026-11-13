@@ -45,37 +45,54 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 10px}
 <p class="greeting" id="greeting">Welcome back</p><div class="clock" id="clock">--:--</div><div class="date" id="date"></div>
 <form class="search" id="googleForm"><input id="googleQuery" aria-label="Google search" placeholder="Search Google..." required><button>Search</button></form>
 <nav class="quick">
-<a href="#news"><b>📰</b>News</a><a href="#explore"><b>🔎</b>Explore</a><a href="#favorites"><b>⭐</b>Favorites</a><a href="#vocab"><b>📚</b>Words</a>
+<a href="#news"><b>📰</b>News</a><a href="#events"><b>🎟️</b>Events</a><a href="#celebrity"><b>🌟</b>Celebrities</a><a href="#mood"><b>🎭</b>Mood</a>
 </nav></section>
 <div class="grid">
-<section class="card" id="news">
-<div class="row between"><h2>📰 Local & world news</h2><button class="pill" id="refreshNews">Refresh</button></div>
-<p class="hint" id="newsLocation">Choose a city or allow location access for local headlines.</p>
-<div class="row"><input class="field" id="city" placeholder="City, e.g. Los Angeles"><button class="action" id="setCity">Set</button></div>
-<div class="list" id="newsList" style="margin-top:10px"><div class="item">Add your city to load recent headlines.</div></div>
-</section>
-<section class="card" id="explore">
-<h2>🔎 Topic explorer</h2><p class="hint">Change the topic anytime. Get six related Wikipedia results.</p>
-<form class="row" id="topicForm"><input class="field" id="topic" placeholder="Try: space exploration" required><button class="action">Go</button></form>
-<div class="list" id="topicList" style="margin-top:10px"><div class="item">Your six results will appear here.</div></div>
-</section>
-<section class="card" id="favorites">
-<div class="row between"><h2>⭐ Favorites</h2><span class="sub">Saved on this phone</span></div>
-<form id="bookmarkForm" class="list">
-<input class="field" id="bookmarkName" placeholder="Website name" required>
-<input class="field" id="bookmarkUrl" placeholder="https://example.com" required>
-<button class="action">＋ Add bookmark</button></form>
-<div class="list" id="bookmarkList" style="margin-top:10px"></div>
-</section>
-<section class="card" id="history">
-<div class="row between"><h2>🕘 Recent activity</h2><button class="pill" id="clearHistory">Clear</button></div>
-<p class="hint">Searches and links opened from this dashboard.</p><div class="list" id="historyList"></div>
-</section>
 <section class="card" id="vocab">
 <div class="row between"><h2>📚 Daily vocabulary</h2><span class="pill" id="wordCount">1 / 10</span></div>
 <p class="hint">Ten words rotate automatically each calendar day.</p>
 <div class="word" id="word"></div><div class="definition" id="definition"></div><div class="example" id="example"></div>
 <div class="wordnav"><button class="pill" id="prevWord">← Previous</button><span class="sub" id="wordDay"></span><button class="pill" id="nextWord">Next →</button></div>
+</section>
+
+
+<section class="card" id="mood">
+<h2>🎭 Mood Selector</h2>
+<p class="hint">Choose how you feel. Discover music, videos, reading and ideas for that mood.</p>
+<div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px" id="moodChoices"></div>
+<div class="list" id="moodResults"><div class="item">Choose a mood to see recommendations.</div></div>
+</section>
+<section class="card" id="news">
+<div class="row between"><h2>📰 Local & world news</h2><button class="pill" id="refreshNews">Refresh</button></div>
+<p class="hint" id="newsLocation">Choose a city or allow location access for local headlines.</p>
+<div class="row"><input class="field" id="city" placeholder="City, e.g. Los Angeles"><button class="action" id="setCity">Set</button></div>
+<div class="list" id="newsList" style="margin-top:10px"><div class="item">Add your city to load recent headlines.</div></div>
+
+</section>
+<section class="card" id="events">
+<div class="row between"><h2>🎟️ Local events & live entertainment</h2><button class="pill" id="refreshEvents">Refresh</button></div>
+<p class="hint" id="eventsIntro">Upcoming seven days, including Saturday and Sunday, near your selected city.</p>
+<div class="list" id="eventsList"><div class="item">Set your city in Local & world news to see local event searches.</div></div>
+
+</section>
+<section class="card" id="celebrity">
+<div class="row between"><h2>🌟 Celebrity news</h2><button class="pill" id="refreshCelebrity">Refresh</button></div>
+<p class="hint">Recent entertainment and celebrity headlines.</p>
+<div class="list" id="celebrityList"><div class="item">Loading celebrity headlines…</div></div>
+</section>
+<section class="card" id="movies">
+<div class="row between"><h2>🎬 Now in theaters</h2><button class="pill" id="refreshMovies">Refresh</button></div>
+<p class="hint" id="moviesIntro">Find current theatrical releases and local showtimes.</p>
+<div class="list" id="moviesList"><div class="item">Set your city in Local & world news to find nearby showtimes.</div></div>
+</section>
+<section class="card" id="explore">
+<h2>🔎 Topic explorer</h2><p class="hint">Search your topic across six social platforms. Each link opens that platform’s own search.</p>
+<form class="row" id="topicForm"><input class="field" id="topic" placeholder="Try: space exploration" required><button class="action">Go</button></form>
+<div class="list" id="topicList" style="margin-top:10px"><div class="item">Enter a topic to create social searches.</div></div>
+</section>
+<section class="card" id="history">
+<div class="row between"><h2>🕘 Recent activity</h2><button class="pill" id="clearHistory">Clear</button></div>
+<p class="hint">Searches and links opened from this dashboard.</p><div class="list" id="historyList"></div>
 </section>
 <section class="card">
 <h2>💡 Quick note</h2><p class="hint">A small space for a thought, reminder, or idea.</p>
@@ -99,7 +116,176 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function renderBookmarks(){let b=get('a17_bookmarks',[]);$('bookmarkList').innerHTML=b.length?b.map((x,i)=>`<div class="item"><button class="remove" data-remove="${i}" aria-label="Remove bookmark">×</button><a href="${x.url}" target="_blank" rel="noopener">${esc(x.name)}</a><small>${esc(x.url)}</small></div>`).join(''):'<div class="item">Your saved shortcuts will appear here.</div>';document.querySelectorAll('[data-remove]').forEach(x=>x.onclick=()=>{let a=get('a17_bookmarks',[]);a.splice(+x.dataset.remove,1);put('a17_bookmarks',a);renderBookmarks()});document.querySelectorAll('#bookmarkList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}
 $('bookmarkForm').onsubmit=e=>{e.preventDefault();let url=safeUrl($('bookmarkUrl').value);if(!url){alert('Please enter a valid website address.');return}let b=get('a17_bookmarks',[]);b.push({name:$('bookmarkName').value.trim(),url});put('a17_bookmarks',b);$('bookmarkName').value='';$('bookmarkUrl').value='';renderBookmarks()};renderBookmarks();
 $('note').value=localStorage.getItem('a17_note')||'';$('note').addEventListener('input',()=>localStorage.setItem('a17_note',$('note').value));
-$('topicForm').onsubmit=async e=>{e.preventDefault();let q=$('topic').value.trim();if(!q)return;$('topicList').innerHTML='<div class="item">Searching Wikipedia…</div>';try{let r=await fetch('https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q)+'&gsrlimit=6& prop=pageprops&format=json&origin=*'.replace(' ','') );let j=await r.json();let pages=Object.values(j.query?.pages||{}).sort((a,b)=>(a.index||0)-(b.index||0));if(!pages.length)throw Error('No results');$('topicList').innerHTML=pages.slice(0,6).map(p=>{let url='https://en.wikipedia.org/?curid='+p.pageid;return `<div class="item"><a href="${url}" target="_blank" rel="noopener">${esc(p.title)}</a><small>Wikipedia article</small></div>`}).join('');document.querySelectorAll('#topicList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}catch(err){$('topicList').innerHTML='<div class="item">Could not load results. Check your connection and try again.</div>'}};
+$('topicForm').onsubmit=e=>{
+e.preventDefault();
+let q=$('topic').value.trim();if(!q)return;
+const enc=encodeURIComponent(q);
+const searches=[
+{name:'YouTube',icon:'▶️',url:'https://www.youtube.com/results?search_query='+enc,detail:'Videos, creators and discussions'},
+{name:'Reddit',icon:'💬',url:'https://www.reddit.com/search/?q='+enc,detail:'Communities and discussions'},
+{name:'TikTok',icon:'🎵',url:'https://www.tiktok.com/search?q='+enc,detail:'Short videos and creators'},
+{name:'Instagram',icon:'📷',url:'https://www.instagram.com/explore/search/keyword/?q='+enc,detail:'Posts, reels and hashtags'},
+{name:'X',icon:'𝕏',url:'https://x.com/search?q='+enc,detail:'Posts and live conversations'},
+{name:'Facebook',icon:'f',url:'https://www.facebook.com/search/top/?q='+enc,detail:'Public posts, pages and groups'}
+];
+$('topicList').innerHTML=searches.map(x=>`<div class="item"><a href="${x.url}" target="_blank" rel="noopener">${x.icon} ${x.name} — Search “${esc(q)}”</a><small>${x.detail} · May require sign-in</small></div>`).join('');
+document.querySelectorAll('#topicList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));
+};
+
+
+function upcomingDays(count=7){
+ const dates=[];let d=new Date();d.setHours(12,0,0,0);
+ for(let i=0;i<count;i++){let next=new Date(d);next.setDate(d.getDate()+i);dates.push(next);}
+ return dates;
+}
+function renderEvents(){
+ const city=localStorage.getItem('a17_city')||$('city').value.trim();
+ const host=$('eventsList');
+ if(!city){$('eventsIntro').textContent='Set a city in Local & world news to personalize these event searches.';host.innerHTML='<div class="item">Add your city in the news section first.</div>';return;}
+ $('eventsIntro').textContent='The next seven calendar days in '+city+', including the weekend. Links open current event listings and searches.';
+ const dates=upcomingDays(7);
+ host.innerHTML=dates.map(d=>{
+   const date=d.toLocaleDateString([], {weekday:'long',month:'short',day:'numeric',year:'numeric'});
+   const dateQuery=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+   const google='https://www.google.com/search?q='+encodeURIComponent('"'+city+'" events concerts live music comedy theater '+dateQuery);
+   const ticket='https://www.google.com/search?q='+encodeURIComponent('concerts near '+city+' '+dateQuery);
+   const live='https://www.google.com/search?q='+encodeURIComponent('live entertainment near '+city+' '+dateQuery);
+   const eventbrite='https://www.eventbrite.com/d/'+encodeURIComponent(city.toLowerCase().replace(/\s+/g,'-'))+'/events/';
+   return `<div class="item"><strong>${date}</strong><small style="margin:7px 0">Find what's happening on this day</small><div class="row" style="flex-wrap:wrap;margin-top:7px"><a href="${google}" target="_blank" rel="noopener">All events</a><span>·</span><a href="${ticket}" target="_blank" rel="noopener">Concerts</a><span>·</span><a href="${live}" target="_blank" rel="noopener">Live shows</a><span>·</span><a href="${eventbrite}" target="_blank" rel="noopener">Eventbrite</a></div></div>`;
+ }).join('');
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Local events: '+a.textContent+' — '+city,a.href)));
+}
+$('refreshEvents').onclick=renderEvents;
+
+
+async function loadCelebrityNews(){
+ const host=$('celebrityList');
+ const feeds=[
+  {label:'ARTISTS',query:'singers musicians artists celebrity news'},
+  {label:'ACTORS',query:'actors actresses film television celebrity news'},
+  {label:'MODEL',query:'fashion models modeling celebrity news'},
+  {label:'POLITICIAN',query:'politicians public figures latest news'},
+  {label:'INTERNET FAME',query:'influencers streamers viral internet personalities news'}
+ ];
+ host.innerHTML='<div class="item">Refreshing five celebrity news feeds…</div>';
+ const results=await Promise.all(feeds.map(async f=>{
+  try{
+   const rss='https://news.google.com/rss/search?q='+encodeURIComponent(f.query)+'&hl=en-US&gl=US&ceid=US:en';
+   const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss));
+   const j=await r.json();
+   return {label:f.label,items:(j.items||[]).slice(0,5)};
+  }catch(e){return {label:f.label,items:[]};}
+ }));
+ const total=results.reduce((sum,group)=>sum+group.items.length,0);
+ if(!total){
+  host.innerHTML='<div class="item">Celebrity headlines are temporarily unavailable. Try Refresh later or visit <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>';
+  return;
+ }
+ host.innerHTML=results.map(group=>group.items.map((x,i)=>`<div class="item"><small><strong>[${group.label}]</strong> ${i+1}.</small><div><a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a></div><small>${esc((x.author||'News source')+' · '+(x.pubDate||''))}</small></div>`).join('')).join('');
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Celebrity news: '+a.textContent,a.href)));
+}
+$('refreshCelebrity').onclick=loadCelebrityNews;
+function renderMovies(){
+ const city=localStorage.getItem('a17_city')||$('city').value.trim();
+ const host=$('moviesList');
+ if(!city){$('moviesIntro').textContent='Set a city in Local & world news to find nearby movie listings.';host.innerHTML='<div class="item">Add your city in the news section first.</div>';return;}
+ $('moviesIntro').textContent='Current theatrical releases and showtimes near '+city+'. Listings change by theater and date.';
+ const searches=[
+  {name:'Movies currently playing',url:'https://www.google.com/search?q='+encodeURIComponent('movies now playing in theaters '+city)},
+  {name:'Showtimes near me',url:'https://www.google.com/search?q='+encodeURIComponent('movie theater showtimes '+city+' today')},
+  {name:'Fandango showtimes',url:'https://www.google.com/search?q='+encodeURIComponent('site:fandango.com '+city+' movie showtimes')},
+  {name:'AMC theaters',url:'https://www.google.com/search?q='+encodeURIComponent('AMC theaters movies showtimes '+city)},
+  {name:'Regal theaters',url:'https://www.google.com/search?q='+encodeURIComponent('Regal cinemas showtimes '+city)}
+ ];
+ host.innerHTML=searches.map(x=>`<div class="item"><a href="${x.url}" target="_blank" rel="noopener">${esc(x.name)}</a><small>Open current local listings</small></div>`).join('');
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Movie listings: '+a.textContent+' — '+city,a.href)));
+}
+$('refreshMovies').onclick=renderMovies;
+
+const moodData=[
+ {name:'Bored',emoji:'🥱',links:[
+  ['New manga releases','Google','new manga releases this week'],
+  ['New music releases','Google','new music releases this week'],
+  ['New movies and shows','Google','new movies and TV shows released this week'],
+  ['New games and entertainment','Google','new games entertainment releases this week'],
+  ['Interesting articles','Google','interesting new longform articles this week'],
+  ['New anime episodes','Google','new anime episodes this week']
+ ]},
+ {name:'Horny',emoji:'🔥',links:[
+  ['Sexual wellness and adult relationships','Google','sexual wellness consent communication adult relationships'],
+  ['Sexual health information','Planned Parenthood','https://www.plannedparenthood.org/learn'],
+  ['Consent and healthy intimacy','RAINN','https://www.rainn.org/articles/what-is-consent'],
+  ['Relationship and intimacy advice','Google','healthy adult intimacy relationship advice']
+ ]},
+ {name:'Angry',emoji:'😡',links:[
+  ['Cute pets and animal videos','YouTube','cute pets funny animals'],
+  ['Animal artwork','Google','cute animal illustrations artwork'],
+  ['Heavy metal playlists','YouTube','heavy metal playlist'],
+  ['Thrash and metalcore','YouTube','thrash metal metalcore playlist'],
+  ['High-energy rock','YouTube','loud hard rock workout playlist']
+ ]},
+ {name:'Sad',emoji:'😢',links:[
+  ['Emo and melancholic playlists','YouTube','emo sad alternative playlist'],
+  ['Soft sad music','YouTube','melancholic indie music playlist'],
+  ['World hunger: humanitarian reporting','Google','World Food Programme hunger children latest report'],
+  ['Children affected by conflict','UNICEF','https://www.unicef.org/emergencies'],
+  ['War and humanitarian updates','UN OCHA','https://www.unocha.org/']
+ ]},
+ {name:'Cheerful',emoji:'😄',links:[
+  ['Popular pop hits','YouTube','popular pop hits playlist'],
+  ['Popular hip-hop','YouTube','popular hip hop playlist'],
+  ['Feel-good music','YouTube','feel good happy music playlist'],
+  ['Positive self-reflection prompts','Google','positive self reflection gratitude prompts'],
+  ['Daily affirmations','Google','positive daily affirmations']
+ ]},
+ {name:'Relaxed',emoji:'😌',links:[
+  ['Ambient and calming music','YouTube','calming ambient music'],
+  ['Nature sounds','YouTube','rain forest ocean nature sounds'],
+  ['Peaceful scenery','YouTube','peaceful nature relaxing scenery'],
+  ['Simple breathing exercises','Google','simple guided breathing exercise']
+ ]},
+ {name:'Energetic',emoji:'⚡',links:[
+  ['Dance and electronic music','YouTube','dance electronic workout playlist'],
+  ['Workout motivation','YouTube','high energy workout music'],
+  ['Sports highlights','YouTube','latest sports highlights'],
+  ['Quick fitness ideas','Google','beginner energizing workout ideas']
+ ]},
+ {name:'Curious',emoji:'🧠',links:[
+  ['Science discoveries','Google','latest science discoveries'],
+  ['Technology news','Google','latest technology breakthroughs'],
+  ['History discoveries','Google','new history archaeology discoveries'],
+  ['Interesting explainers','Google','interesting educational explainers']
+ ]},
+ {name:'Lonely',emoji:'❤️',links:[
+  ['Heartwarming stories','Google','heartwarming human kindness stories'],
+  ['Comforting music','YouTube','comforting songs playlist'],
+  ['Friendship communities','Google','positive friendship communities online'],
+  ['Mental health support resources','988 Lifeline','https://988lifeline.org/']
+ ]},
+ {name:'Adventurous',emoji:'🌈',links:[
+  ['Amazing places','Google','amazing places to visit around the world'],
+  ['Travel documentaries','YouTube','travel adventure documentary'],
+  ['Outdoor adventures','Google','outdoor adventures near me'],
+  ['Unusual facts and discoveries','Google','unusual discoveries around the world']
+ ]}
+];
+function moodUrl(platform,term){
+ if(term.startsWith('https://'))return term;
+ const q=encodeURIComponent(term);
+ if(platform==='YouTube')return 'https://www.youtube.com/results?search_query='+q;
+ return 'https://www.google.com/search?q='+q;
+}
+function renderMoodChoices(){
+ $('moodChoices').innerHTML=moodData.map((m,i)=>`<button class="pill" data-mood="${i}" style="border-radius:13px;padding:12px 8px;text-align:left">${m.emoji} ${m.name}</button>`).join('');
+ $('moodChoices').querySelectorAll('[data-mood]').forEach(b=>b.onclick=()=>showMood(+b.dataset.mood));
+}
+function showMood(i){
+ const m=moodData[i];
+ $('moodResults').innerHTML=`<div class="item"><strong>${m.emoji} ${m.name}</strong><small>Suggestions selected for this mood. Choose anything that feels right; you can switch moods anytime.</small></div>`+
+ m.links.map((x,n)=>{const url=moodUrl(x[1],x[2]);return `<div class="item"><strong>${n+1}. ${esc(x[0])}</strong><small><a href="${url}" target="_blank" rel="noopener">${esc(x[1]==='Google'||x[1]==='YouTube'?'Explore '+x[0]:'Open '+x[1])}</a></small></div>`}).join('');
+ $('moodResults').querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Mood: '+m.name+' — '+a.textContent,a.href)));
+}
+renderMoodChoices();
 const vocab=[
 ['Abstruse','Difficult to understand; obscure.','The lecture explored an abstruse mathematical idea.'],
 ['Alacrity','Cheerful readiness or eagerness.','She accepted the challenge with alacrity.'],
@@ -135,9 +321,21 @@ let dayIndex=Math.floor(Date.now()/86400000),start=(dayIndex*10)%vocab.length,wi
 function showWord(){let idx=(start+wi)%vocab.length,w=vocab[idx];$('word').textContent=w[0];$('definition').textContent=w[1];$('example').textContent='Example: '+w[2];$('wordCount').textContent=(wi+1)+' / 10';$('wordDay').textContent='Daily set';}
 $('prevWord').onclick=()=>{wi=(wi+9)%10;showWord()};$('nextWord').onclick=()=>{wi=(wi+1)%10;showWord()};showWord();
 async function loadNews(){let city=localStorage.getItem('a17_city')||'';$('newsLocation').textContent=city?'Headlines for '+city:'Enter a city to personalize headlines.';if(!city){$('newsList').innerHTML='<div class="item">Set a city above to load local news.</div>';return}$('newsList').innerHTML='<div class="item">Loading recent headlines…</div>';try{let rss='https://news.google.com/rss/search?q='+encodeURIComponent('news '+city)+'&hl=en-US&gl=US&ceid=US:en';let api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss);let r=await fetch(api);let j=await r.json();if(!j.items?.length)throw Error('No stories');$('newsList').innerHTML=j.items.slice(0,6).map(x=>`<div class="item"><a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc((x.author||'News source')+' · '+(x.pubDate||''))}</small></div>`).join('');document.querySelectorAll('#newsList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}catch(e){$('newsList').innerHTML='<div class="item">Headlines could not be loaded right now. Try Refresh, or open <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>'}}
-$('setCity').onclick=()=>{let c=$('city').value.trim();if(c){localStorage.setItem('a17_city',c);loadNews()}};$('refreshNews').onclick=loadNews;$('city').value=localStorage.getItem('a17_city')||'';
-if(!localStorage.getItem('a17_city')&&navigator.geolocation){navigator.geolocation.getCurrentPosition(async pos=>{try{let u='https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;let r=await fetch(u);let j=await r.json();let a=j.address||{};let c=a.city||a.town||a.village||a.county||'';if(c){localStorage.setItem('a17_city',c);$('city').value=c;loadNews()}}catch{}},()=>{}, {timeout:7000,maximumAge:86400000})}
-loadNews();
+$('setCity').onclick=()=>{let c=$('city').value.trim();if(c){localStorage.setItem('a17_city',c);loadNews();renderEvents();renderMovies()}};$('refreshNews').onclick=loadNews;$('city').value=localStorage.getItem('a17_city')||'';
+if(!localStorage.getItem('a17_city')&&navigator.geolocation){navigator.geolocation.getCurrentPosition(async pos=>{try{let u='https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;let r=await fetch(u);let j=await r.json();let a=j.address||{};let c=a.city||a.town||a.village||a.county||'';if(c){localStorage.setItem('a17_city',c);$('city').value=c;loadNews();renderEvents();renderMovies()}}catch{}},()=>{}, {timeout:7000,maximumAge:86400000})}
+loadNews();renderEvents();renderMovies();loadCelebrityNews();
+
+let lastDailyRefresh=new Date().toLocaleDateString();
+function refreshDailyContent(){
+ const today=new Date().toLocaleDateString();
+ if(today===lastDailyRefresh)return;
+ lastDailyRefresh=today;
+ dayIndex=Math.floor(Date.now()/86400000);
+ start=(dayIndex*10)%vocab.length;
+ wi=0;showWord();
+ loadNews();loadCelebrityNews();renderEvents();renderMovies();anime();
+}
+setInterval(refreshDailyContent,60000);
 // One random SFW anime illustration is cached per local calendar day.
 async function anime(){let key='a17_art_day',today=new Date().toLocaleDateString();if(localStorage.getItem(key)===today&&localStorage.getItem('a17_art')){document.body.style.setProperty('--daily-art','url("'+localStorage.getItem('a17_art')+'")');return}try{let r=await fetch('https://api.waifu.pics/sfw/waifu');let j=await r.json();if(j.url){localStorage.setItem('a17_art',j.url);localStorage.setItem(key,today);document.body.style.setProperty('--daily-art','url("'+j.url+'")')}}catch{}}
 $('changeArt').onclick=async()=>{localStorage.removeItem('a17_art_day');await anime()};anime();
