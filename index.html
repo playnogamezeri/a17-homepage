@@ -7,7 +7,7 @@
 <title>My A17 Dashboard</title>
 <style>
 :root{color-scheme:dark;--panel:rgba(14,20,34,.78);--panel2:rgba(255,255,255,.09);--line:rgba(255,255,255,.13);--ink:#f5f7ff;--muted:#b8c0d5;--accent:#a8c7ff}
-*{box-sizing:border-box} body{margin:0;min-height:100vh;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#111827}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:transparent}
 body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(5,9,18,.22),rgba(5,9,18,.42)),var(--daily-art,linear-gradient(135deg,#10182b,#342c54 55%,#182b43));background-size:cover;background-position:center;transition:background .5s}
 body:after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(5,9,18,.48),rgba(5,9,18,.78))}
 .wrap{width:min(100% - 28px,900px);margin:auto;padding:28px 0 50px}
@@ -79,7 +79,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 10px}
 </section>
 <section class="card" id="celebrity">
 <div class="row between"><h2>🌟 Celebrity news</h2><button class="pill" id="refreshCelebrity">Refresh</button></div>
-<p class="hint">Recent entertainment and celebrity headlines.</p>
+<p class="hint">Ten recent headlines, newest first. Search by celebrity, topic, or headline.</p>
+<form class="row" id="celebritySearchForm" style="margin-bottom:10px"><input class="field" id="celebritySearch" placeholder="Search celebrity news..." aria-label="Search celebrity news"><button class="action">Search</button><button class="pill" type="button" id="clearCelebritySearch">Clear</button></form>
 <div class="list" id="celebrityList"><div class="item">Loading celebrity headlines…</div></div>
 </section>
 <section class="card" id="movies">
@@ -149,32 +150,41 @@ function renderEvents(){
 $('refreshEvents').onclick=renderEvents;
 
 
+let celebrityItems=[];
+function renderCelebrityNews(){
+ const q=$('celebritySearch').value.trim().toLowerCase();
+ const filtered=celebrityItems.filter(x=>!q||(x.title+' '+x.label+' '+x.source).toLowerCase().includes(q)).slice(0,10);
+ const host=$('celebrityList');
+ if(!celebrityItems.length){host.innerHTML='<div class="item">Celebrity headlines are temporarily unavailable. Try Refresh later or visit <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>';return}
+ if(!filtered.length){host.innerHTML='<div class="item">No matching headlines. Try another name or clear the search.</div>';return}
+ host.innerHTML=filtered.map((x,i)=>`<div class="item"><div><strong>News ${i+1}.</strong> <a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a></div><small>${esc(x.source+' · '+x.date)} <span style="float:right;border:1px solid var(--line);border-radius:999px;padding:1px 7px">${esc(x.label)}</span></small></div>`).join('');
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Celebrity news: '+a.textContent,a.href)));
+}
 async function loadCelebrityNews(){
  const host=$('celebrityList');
  const feeds=[
-  {label:'ARTISTS',query:'singers musicians artists celebrity news'},
-  {label:'ACTORS',query:'actors actresses film television celebrity news'},
+  {label:'ARTIST',query:'singers musicians artists celebrity news'},
+  {label:'ACTOR',query:'actors actresses film television celebrity news'},
   {label:'MODEL',query:'fashion models modeling celebrity news'},
   {label:'POLITICIAN',query:'politicians public figures latest news'},
   {label:'INTERNET FAME',query:'influencers streamers viral internet personalities news'}
  ];
- host.innerHTML='<div class="item">Refreshing five celebrity news feeds…</div>';
+ host.innerHTML='<div class="item">Refreshing celebrity headlines…</div>';
  const results=await Promise.all(feeds.map(async f=>{
   try{
    const rss='https://news.google.com/rss/search?q='+encodeURIComponent(f.query)+'&hl=en-US&gl=US&ceid=US:en';
    const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss));
    const j=await r.json();
-   return {label:f.label,items:(j.items||[]).slice(0,5)};
-  }catch(e){return {label:f.label,items:[]};}
+   return (j.items||[]).map(x=>({label:f.label,title:x.title||'Untitled story',link:x.link||'https://news.google.com/',source:x.author||'News source',date:x.pubDate||'',timestamp:Date.parse(x.pubDate||'')||0}));
+  }catch(e){return []}
  }));
- const total=results.reduce((sum,group)=>sum+group.items.length,0);
- if(!total){
-  host.innerHTML='<div class="item">Celebrity headlines are temporarily unavailable. Try Refresh later or visit <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>';
-  return;
- }
- host.innerHTML=results.map(group=>group.items.map((x,i)=>`<div class="item"><small><strong>[${group.label}]</strong> ${i+1}.</small><div><a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a></div><small>${esc((x.author||'News source')+' · '+(x.pubDate||''))}</small></div>`).join('')).join('');
- host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Celebrity news: '+a.textContent,a.href)));
+ const seen=new Set();
+ celebrityItems=results.flat().filter(x=>{const k=x.link||x.title;if(seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>b.timestamp-a.timestamp).slice(0,50);
+ renderCelebrityNews();
 }
+$('celebritySearchForm').addEventListener('submit',e=>{e.preventDefault();renderCelebrityNews()});
+$('celebritySearch').addEventListener('input',renderCelebrityNews);
+$('clearCelebritySearch').onclick=()=>{$('celebritySearch').value='';renderCelebrityNews()};
 $('refreshCelebrity').onclick=loadCelebrityNews;
 function renderMovies(){
  const place=getLocationLabel(),radius=getRadius(),host=$('moviesList');
@@ -322,7 +332,8 @@ const vocab=[
 ['Resonant','Having a deep, clear, or lasting effect.','The message was resonant with the audience.'],
 ['Coherent','Logical, consistent, and easy to follow.','She presented a coherent argument.'],
 ['Discerning','Showing good judgment and insight.','A discerning reader notices the small details.']];
-let dayIndex=Math.floor(Date.now()/86400000),start=(dayIndex*10)%vocab.length,wi=0;
+function localDayNumber(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)}
+let dayIndex=localDayNumber(),start=(dayIndex*10)%vocab.length,wi=0;
 function showWord(){let idx=(start+wi)%vocab.length,w=vocab[idx];$('word').textContent=w[0];$('definition').textContent=w[1];$('example').textContent='Example: '+w[2];$('wordCount').textContent=(wi+1)+' / 10';$('wordDay').textContent='Daily set';}
 $('prevWord').onclick=()=>{wi=(wi+9)%10;showWord()};$('nextWord').onclick=()=>{wi=(wi+1)%10;showWord()};showWord();
 function getRadius(){return Number(localStorage.getItem('a17_radius')||$('radiusMiles').value||10)}
@@ -355,7 +366,7 @@ function refreshDailyContent(){
  const today=new Date().toLocaleDateString();
  if(today===lastDailyRefresh)return;
  lastDailyRefresh=today;
- dayIndex=Math.floor(Date.now()/86400000);
+ dayIndex=localDayNumber();
  start=(dayIndex*10)%vocab.length;
  wi=0;showWord();
  loadNews();loadCelebrityNews();renderEvents();renderMovies();anime();
