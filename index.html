@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101522">
+<title>My A17 Dashboard</title>
+<style>
+:root{color-scheme:dark;--panel:rgba(14,20,34,.78);--panel2:rgba(255,255,255,.09);--line:rgba(255,255,255,.13);--ink:#f5f7ff;--muted:#b8c0d5;--accent:#a8c7ff}
+*{box-sizing:border-box} body{margin:0;min-height:100vh;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:#111827}
+body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(5,9,18,.22),rgba(5,9,18,.42)),var(--daily-art,linear-gradient(135deg,#10182b,#342c54 55%,#182b43));background-size:cover;background-position:center;transition:background .5s}
+body:after{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(5,9,18,.48),rgba(5,9,18,.78))}
+.wrap{width:min(100% - 28px,900px);margin:auto;padding:28px 0 50px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+.brand{font-weight:800;letter-spacing:.04em}.sub{color:var(--muted);font-size:12px}
+.pill,.btn{border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:999px;padding:8px 12px;font:inherit}
+.hero{padding:24px 20px 20px;border:1px solid var(--line);border-radius:24px;background:var(--panel);backdrop-filter:blur(18px);box-shadow:0 18px 50px #0004}
+.greeting{color:var(--muted);margin:0}.clock{font-size:clamp(36px,9vw,58px);font-weight:750;letter-spacing:-.05em;line-height:1.12;margin:5px 0}
+.date{color:var(--muted);margin-bottom:18px}
+.search{display:flex;gap:8px;background:#fff;color:#182033;border-radius:16px;padding:6px}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;padding:10px 12px;color:#182033;font:inherit}
+.search button{border:0;border-radius:12px;background:#182033;color:white;padding:0 16px;font-weight:700}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:15px}
+.quick a{display:grid;place-items:center;gap:3px;text-decoration:none;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px 4px;font-size:12px}
+.quick b{font-size:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.card{background:var(--panel);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:20px;padding:17px;min-width:0}
+.card h2{font-size:17px;margin:0 0 4px}.hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+.row{display:flex;align-items:center;gap:8px}.between{justify-content:space-between}
+input,select{font:inherit}.field{width:100%;min-width:0;background:#10192b;border:1px solid var(--line);color:var(--ink);border-radius:11px;padding:10px}
+.action{background:#dce8ff;color:#172238;border:0;border-radius:11px;padding:10px 12px;font-weight:750}
+.list{display:grid;gap:8px}.item{padding:10px 11px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow-wrap:anywhere}
+.item a{color:#dce8ff;text-decoration:none;font-weight:650}.item small{display:block;color:var(--muted);margin-top:3px}
+.item .remove{float:right;background:transparent;color:var(--muted);border:0;font-size:17px}
+.word{font-size:21px;font-weight:800;margin:8px 0 2px}.definition{color:#e0e6f5}.example{color:var(--muted);font-size:13px;margin-top:6px}
+.wordnav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 10px}
+@media(max-width:640px){.wrap{width:min(100% - 20px,560px);padding-top:16px}.grid{grid-template-columns:1fr}.hero{padding:20px 15px}.quick{gap:6px}.quick a{font-size:11px}.card{padding:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div><div class="brand">✦ MY A17 DASHBOARD</div><div class="sub">Your little corner of the internet</div></div><button class="pill" id="changeArt">✧ New anime art</button></header>
+<section class="hero">
+<p class="greeting" id="greeting">Welcome back</p><div class="clock" id="clock">--:--</div><div class="date" id="date"></div>
+<form class="search" id="googleForm"><input id="googleQuery" aria-label="Google search" placeholder="Search Google..." required><button>Search</button></form>
+<nav class="quick">
+<a href="#news"><b>📰</b>News</a><a href="#explore"><b>🔎</b>Explore</a><a href="#favorites"><b>⭐</b>Favorites</a><a href="#vocab"><b>📚</b>Words</a>
+</nav></section>
+<div class="grid">
+<section class="card" id="news">
+<div class="row between"><h2>📰 Local & world news</h2><button class="pill" id="refreshNews">Refresh</button></div>
+<p class="hint" id="newsLocation">Choose a city or allow location access for local headlines.</p>
+<div class="row"><input class="field" id="city" placeholder="City, e.g. Los Angeles"><button class="action" id="setCity">Set</button></div>
+<div class="list" id="newsList" style="margin-top:10px"><div class="item">Add your city to load recent headlines.</div></div>
+</section>
+<section class="card" id="explore">
+<h2>🔎 Topic explorer</h2><p class="hint">Change the topic anytime. Get six related Wikipedia results.</p>
+<form class="row" id="topicForm"><input class="field" id="topic" placeholder="Try: space exploration" required><button class="action">Go</button></form>
+<div class="list" id="topicList" style="margin-top:10px"><div class="item">Your six results will appear here.</div></div>
+</section>
+<section class="card" id="favorites">
+<div class="row between"><h2>⭐ Favorites</h2><span class="sub">Saved on this phone</span></div>
+<form id="bookmarkForm" class="list">
+<input class="field" id="bookmarkName" placeholder="Website name" required>
+<input class="field" id="bookmarkUrl" placeholder="https://example.com" required>
+<button class="action">＋ Add bookmark</button></form>
+<div class="list" id="bookmarkList" style="margin-top:10px"></div>
+</section>
+<section class="card" id="history">
+<div class="row between"><h2>🕘 Recent activity</h2><button class="pill" id="clearHistory">Clear</button></div>
+<p class="hint">Searches and links opened from this dashboard.</p><div class="list" id="historyList"></div>
+</section>
+<section class="card" id="vocab">
+<div class="row between"><h2>📚 Daily vocabulary</h2><span class="pill" id="wordCount">1 / 10</span></div>
+<p class="hint">Ten words rotate automatically each calendar day.</p>
+<div class="word" id="word"></div><div class="definition" id="definition"></div><div class="example" id="example"></div>
+<div class="wordnav"><button class="pill" id="prevWord">← Previous</button><span class="sub" id="wordDay"></span><button class="pill" id="nextWord">Next →</button></div>
+</section>
+<section class="card">
+<h2>💡 Quick note</h2><p class="hint">A small space for a thought, reminder, or idea.</p>
+<textarea class="field" id="note" rows="4" placeholder="Write a note..."></textarea><p class="hint">Saved automatically on this phone.</p>
+</section>
+</div>
+<footer>Personal dashboard · Bookmarks, notes and activity stay in this browser on this device. External news and topic services need an internet connection.</footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const get=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}};
+const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+function tick(){const d=new Date();$('clock').textContent=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});$('date').textContent=d.toLocaleDateString([], {weekday:'long',year:'numeric',month:'long',day:'numeric'});$('greeting').textContent=(d.getHours()<12?'Good morning':d.getHours()<18?'Good afternoon':'Good evening');}
+tick();setInterval(tick,15000);
+function record(title,url){let h=get('a17_history',[]);h.unshift({title,url,at:new Date().toLocaleString()});put('a17_history',h.slice(0,12));renderHistory();}
+function safeUrl(s){try{let u=new URL(s.includes('://')?s:'https://'+s);return ['http:','https:'].includes(u.protocol)?u.href:null}catch{return null}}
+$('googleForm').addEventListener('submit',e=>{e.preventDefault();let q=$('googleQuery').value.trim();if(!q)return;record('Google: '+q,'https://www.google.com/search?q='+encodeURIComponent(q));location.href='https://www.google.com/search?q='+encodeURIComponent(q)});
+function renderHistory(){let h=get('a17_history',[]);$('historyList').innerHTML=h.length?h.map(x=>`<div class="item"><a href="${x.url}" target="_blank" rel="noopener" data-title="${encodeURIComponent(x.title)}">${esc(x.title)}</a><small>${esc(x.at)}</small></div>`).join(''):'<div class="item">No recent dashboard activity yet.</div>';document.querySelectorAll('#historyList a').forEach(a=>a.addEventListener('click',()=>record(decodeURIComponent(a.dataset.title),a.href)));}
+$('clearHistory').onclick=()=>{put('a17_history',[]);renderHistory()};renderHistory();
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderBookmarks(){let b=get('a17_bookmarks',[]);$('bookmarkList').innerHTML=b.length?b.map((x,i)=>`<div class="item"><button class="remove" data-remove="${i}" aria-label="Remove bookmark">×</button><a href="${x.url}" target="_blank" rel="noopener">${esc(x.name)}</a><small>${esc(x.url)}</small></div>`).join(''):'<div class="item">Your saved shortcuts will appear here.</div>';document.querySelectorAll('[data-remove]').forEach(x=>x.onclick=()=>{let a=get('a17_bookmarks',[]);a.splice(+x.dataset.remove,1);put('a17_bookmarks',a);renderBookmarks()});document.querySelectorAll('#bookmarkList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}
+$('bookmarkForm').onsubmit=e=>{e.preventDefault();let url=safeUrl($('bookmarkUrl').value);if(!url){alert('Please enter a valid website address.');return}let b=get('a17_bookmarks',[]);b.push({name:$('bookmarkName').value.trim(),url});put('a17_bookmarks',b);$('bookmarkName').value='';$('bookmarkUrl').value='';renderBookmarks()};renderBookmarks();
+$('note').value=localStorage.getItem('a17_note')||'';$('note').addEventListener('input',()=>localStorage.setItem('a17_note',$('note').value));
+$('topicForm').onsubmit=async e=>{e.preventDefault();let q=$('topic').value.trim();if(!q)return;$('topicList').innerHTML='<div class="item">Searching Wikipedia…</div>';try{let r=await fetch('https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='+encodeURIComponent(q)+'&gsrlimit=6& prop=pageprops&format=json&origin=*'.replace(' ','') );let j=await r.json();let pages=Object.values(j.query?.pages||{}).sort((a,b)=>(a.index||0)-(b.index||0));if(!pages.length)throw Error('No results');$('topicList').innerHTML=pages.slice(0,6).map(p=>{let url='https://en.wikipedia.org/?curid='+p.pageid;return `<div class="item"><a href="${url}" target="_blank" rel="noopener">${esc(p.title)}</a><small>Wikipedia article</small></div>`}).join('');document.querySelectorAll('#topicList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}catch(err){$('topicList').innerHTML='<div class="item">Could not load results. Check your connection and try again.</div>'}};
+const vocab=[
+['Abstruse','Difficult to understand; obscure.','The lecture explored an abstruse mathematical idea.'],
+['Alacrity','Cheerful readiness or eagerness.','She accepted the challenge with alacrity.'],
+['Ameliorate','To make something better or less severe.','The new policy may ameliorate the problem.'],
+['Aplomb','Self-confidence and composure, especially under pressure.','He handled the difficult question with aplomb.'],
+['Assiduous','Showing great care, effort, and persistence.','Her assiduous practice improved her skills.'],
+['Candid','Truthful and straightforward.','They had a candid conversation about expectations.'],
+['Conundrum','A confusing or difficult problem.','Choosing between the two options was a conundrum.'],
+['Diligent','Careful and persistent in one’s work.','A diligent review caught the error.'],
+['Eloquent','Fluent or persuasive in speaking or writing.','His eloquent explanation made the idea clear.'],
+['Empathy','The ability to understand another person’s feelings.','Empathy can make disagreements easier to navigate.'],
+['Ephemeral','Lasting for a very short time.','The rainbow was beautiful but ephemeral.'],
+['Equanimity','Calmness and balance, especially in difficulty.','She responded to the setback with equanimity.'],
+['Fastidious','Very attentive to detail and accuracy.','He is fastidious about organizing his files.'],
+['Fortuitous','Happening by chance in a helpful way.','A fortuitous meeting led to a new opportunity.'],
+['Ineffable','Too great or special to be expressed in words.','The view inspired an ineffable sense of wonder.'],
+['Lucid','Clear and easy to understand.','The guide gives a lucid overview of the process.'],
+['Magnanimous','Generous and forgiving, especially toward a rival.','The winner was magnanimous in victory.'],
+['Meticulous','Extremely careful about details.','She kept meticulous notes during the project.'],
+['Nuance','A subtle difference in meaning or expression.','The discussion missed an important nuance.'],
+['Pragmatic','Focused on practical results and solutions.','They chose a pragmatic approach.'],
+['Resilient','Able to recover after difficulty.','The resilient team adapted to the change.'],
+['Sagacious','Wise and showing good judgment.','It was a sagacious decision to wait.'],
+['Serendipity','A fortunate discovery made by chance.','Finding that book was pure serendipity.'],
+['Tenacious','Persistent and determined.','Her tenacious effort carried the project forward.'],
+['Ubiquitous','Present or found almost everywhere.','Smartphones are ubiquitous in daily life.'],
+['Voracious','Having an eager, very large appetite for something.','He is a voracious reader of history.'],
+['Pristine','In its original, clean, or unspoiled condition.','The coastline remained pristine.'],
+['Resonant','Having a deep, clear, or lasting effect.','The message was resonant with the audience.'],
+['Coherent','Logical, consistent, and easy to follow.','She presented a coherent argument.'],
+['Discerning','Showing good judgment and insight.','A discerning reader notices the small details.']];
+let dayIndex=Math.floor(Date.now()/86400000),start=(dayIndex*10)%vocab.length,wi=0;
+function showWord(){let idx=(start+wi)%vocab.length,w=vocab[idx];$('word').textContent=w[0];$('definition').textContent=w[1];$('example').textContent='Example: '+w[2];$('wordCount').textContent=(wi+1)+' / 10';$('wordDay').textContent='Daily set';}
+$('prevWord').onclick=()=>{wi=(wi+9)%10;showWord()};$('nextWord').onclick=()=>{wi=(wi+1)%10;showWord()};showWord();
+async function loadNews(){let city=localStorage.getItem('a17_city')||'';$('newsLocation').textContent=city?'Headlines for '+city:'Enter a city to personalize headlines.';if(!city){$('newsList').innerHTML='<div class="item">Set a city above to load local news.</div>';return}$('newsList').innerHTML='<div class="item">Loading recent headlines…</div>';try{let rss='https://news.google.com/rss/search?q='+encodeURIComponent('news '+city)+'&hl=en-US&gl=US&ceid=US:en';let api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss);let r=await fetch(api);let j=await r.json();if(!j.items?.length)throw Error('No stories');$('newsList').innerHTML=j.items.slice(0,6).map(x=>`<div class="item"><a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc((x.author||'News source')+' · '+(x.pubDate||''))}</small></div>`).join('');document.querySelectorAll('#newsList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));}catch(e){$('newsList').innerHTML='<div class="item">Headlines could not be loaded right now. Try Refresh, or open <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>'}}
+$('setCity').onclick=()=>{let c=$('city').value.trim();if(c){localStorage.setItem('a17_city',c);loadNews()}};$('refreshNews').onclick=loadNews;$('city').value=localStorage.getItem('a17_city')||'';
+if(!localStorage.getItem('a17_city')&&navigator.geolocation){navigator.geolocation.getCurrentPosition(async pos=>{try{let u='https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;let r=await fetch(u);let j=await r.json();let a=j.address||{};let c=a.city||a.town||a.village||a.county||'';if(c){localStorage.setItem('a17_city',c);$('city').value=c;loadNews()}}catch{}},()=>{}, {timeout:7000,maximumAge:86400000})}
+loadNews();
+// One random SFW anime illustration is cached per local calendar day.
+async function anime(){let key='a17_art_day',today=new Date().toLocaleDateString();if(localStorage.getItem(key)===today&&localStorage.getItem('a17_art')){document.body.style.setProperty('--daily-art','url("'+localStorage.getItem('a17_art')+'")');return}try{let r=await fetch('https://api.waifu.pics/sfw/waifu');let j=await r.json();if(j.url){localStorage.setItem('a17_art',j.url);localStorage.setItem(key,today);document.body.style.setProperty('--daily-art','url("'+j.url+'")')}}catch{}}
+$('changeArt').onclick=async()=>{localStorage.removeItem('a17_art_day');await anime()};anime();
+</script>
+</body></html>
