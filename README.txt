@@ -33,3 +33,6 @@ IMPORTANT LIMITATIONS
 
 CHROME HOMEPAGE NOTE
 Android Chrome may not allow a custom webpage to replace its built-in New Tab page. Adding the published site to the Home screen gives you a convenient app-like shortcut.
+TROUBLESHOOTING UPDATE
+- A startup error caused by leftover bookmark code referencing removed page elements was fixed. That error stopped the rest of the dashboard JavaScript from initializing, which made many controls appear broken.
+- The obsolete bookmark code has been removed. The dashboard's visible buttons now have matching event handlers, and the four quick-navigation links point to existing sections.
