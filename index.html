@@ -73,8 +73,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 10px}
 </section>
 <section class="card" id="events">
 <div class="row between"><h2>🎟️ Local events & live entertainment</h2><button class="pill" id="refreshEvents">Refresh</button></div>
-<p class="hint" id="eventsIntro">Upcoming seven days, including Saturday and Sunday, near your selected city.</p>
-<div class="list" id="eventsList"><div class="item">Set your city in Local & world news to see local event searches.</div></div>
+<p class="hint" id="eventsIntro">Researched meetups, concerts, comedy, theater, and community events for the current week.</p>
+<div class="list" id="eventsList"><div class="item">Current researched listings for the week, with event details and ticket links.</div></div>
 
 </section>
 <section class="card" id="celebrity">
@@ -135,17 +135,33 @@ document.querySelectorAll('#topicList a').forEach(a=>a.addEventListener('click',
 };
 
 
-function upcomingDays(count=7){
- const dates=[];let d=new Date();d.setHours(12,0,0,0);
- for(let i=0;i<count;i++){let next=new Date(d);next.setDate(d.getDate()+i);dates.push(next);}
- return dates;
-}
+const researchedEvents=[
+ {date:'Fri, Nov 13',time:'7:00 PM',title:'Gianmarco Soresi: The Misery Loves Tour',venue:'Orpheum Theatre · Downtown LA',type:'Comedy',url:'https://www.curationsla.com/ad523590-6284-4e75-a272-9f1e0e7a6534-gianmarco-soresi-the-misery-loves-tour-20261114'},
+ {date:'Fri, Nov 13',time:'7:00 PM',title:'Trap Karaoke: Los Angeles',venue:'The Belasco · Downtown LA',type:'Music / Social',url:'https://www.curationsla.com/e5f20ef1-2c4f-4e20-a89d-617a1bff4d11-trap-karaoke-los-angeles-20261114'},
+ {date:'Fri, Nov 13',time:'7:00 PM',title:'SWMRS with The Happy Return',venue:'Teragram Ballroom · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/dad146d6-0f6e-4091-9796-1541f8f47985-swmrs-20261114'},
+ {date:'Fri, Nov 13',time:'7:30 PM',title:'At The Lab: Trios',venue:'Hollywood Improv · Hollywood',type:'Comedy',url:'https://www.curationsla.com/day/2026-11-13'},
+ {date:'Sat, Nov 14',time:'7:00 PM',title:'2026 Rock and Roll Hall of Fame Ceremony',venue:'Peacock Theater · Downtown LA',type:'Live Entertainment',url:'https://www.curationsla.com/1a05b28a-4dd5-4a24-822a-572ffc1e5da3-2026-rock-and-roll-hall-of-fame-20261115'},
+ {date:'Sat, Nov 14',time:'8:00 PM',title:'Ezra Collective — Here Because of Hope Tour',venue:'The Regent Theater · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/7f8e9af9-7e0a-4d9f-87ab-5bd93489990d-mixed-feelings-presents-ezra-collective-here-because-of-hope-20261115'},
+ {date:'Sat, Nov 14',time:'7:00 PM',title:'Miles Minnick — GLOVEMBER',venue:'The Belasco · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/day/2026-11-14'},
+ {date:'Sun, Nov 15',time:'8:00 PM',title:'The Milk Carton Kids with Paper Wings',venue:'The Fonda Theatre · Hollywood',type:'Live Music',url:'https://www.curationsla.com/5ac59f2f-bbe0-44ac-b017-597b9b04f56b-the-milk-carton-kids-w-paper-wings-20261116'},
+ {date:'Sun, Nov 15',time:'6:00 PM',title:'20 Years of Nekrogoblikon with Special Guests Aborted',venue:'The Belasco · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/e5f20ef1-2c4f-4e20-a89d-617a1bff4d11-trap-karaoke-los-angeles-20261114'},
+ {date:'Mon, Nov 16',time:'8:00 PM',title:'Gary Numan',venue:'The Fonda Theatre · Hollywood',type:'Live Music',url:'https://www.curationsla.com/8b8e36f5-53d5-479c-bbac-0839f87f4c74-gary-numan-20261117'},
+ {date:'Mon, Nov 16',time:'7:00 PM',title:'Josh Homme & Friends — Benefit for CORE',venue:'The Wiltern · Koreatown',type:'Live Music / Benefit',url:'https://www.curationsla.com/day/2026-11-16'},
+ {date:'Tue, Nov 17',time:'8:00 PM',title:'DANNA',venue:'The Fonda Theatre · Hollywood',type:'Live Music',url:'https://www.curationsla.com/e5741a63-d27f-4a88-bb7e-0c0bc4cdbcfe-danna-20261118'},
+ {date:'Tue, Nov 17',time:'7:00 PM',title:'Rachel Maddow',venue:'The Novo · Downtown LA',type:'Talk / Live Event',url:'https://www.curationsla.com/day/2026-11-17'},
+ {date:'Wed, Nov 18',time:'7:00 PM',title:'Manic Street Preachers',venue:'The Belasco · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/2870ece4-3cfb-4239-bed5-e76e8822a177-manic-street-preachers-moved-from-wiltern-20261119'},
+ {date:'Wed, Nov 18',time:'7:30 PM',title:'Comedy Crush featuring Arsenio Hall',venue:'Hollywood Improv · Hollywood',type:'Comedy',url:'https://www.ticketmaster.com/discover/los-angeles?categoryId=KZFzniwnSyZfZ7v7na&classificationId=KnvZfZ7vAe1&page=1'},
+ {date:'Thu, Nov 19',time:'6:00 PM',title:'Senses Fail Presents Still Searching',venue:'The Belasco · Downtown LA',type:'Live Music',url:'https://www.curationsla.com/a29f7183-8b05-470f-83b3-4a95cecd468e-senses-fail-presents-still-searching-20261120'},
+ {date:'Thu, Nov 19',time:'7:00 PM',title:'Brad Williams — The Tall Tales Tour',venue:'The Wiltern · Koreatown',type:'Comedy',url:'https://www.ticketmaster.com/discover/los-angeles?categoryId=KZFzniwnSyZfZ7v7na&classificationId=KnvZfZ7vAe1&page=1'}
+];
 function renderEvents(){
- const place=getLocationLabel(),radius=getRadius(),host=$('eventsList');
- if(!place){$('eventsIntro').textContent='Set a ZIP code or use device location above.';host.innerHTML='<div class="item">Add a ZIP code first.</div>';return}
- $('eventsIntro').textContent='Upcoming seven days near '+place+' · approximately '+radius+' miles. Search providers may not enforce exact distance.';
- host.innerHTML=upcomingDays(7).map(d=>{const date=d.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric',year:'numeric'}),day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),near=' near '+place+' within '+radius+' miles ';const links=[['All events','events concerts live music comedy theater'+near+day],['Concerts','concerts'+near+day],['Live shows','live entertainment'+near+day],['Eventbrite','site:eventbrite.com events'+near+day]];return `<div class="item"><strong>${date}</strong><small style="margin:7px 0">Search events within approximately ${radius} miles</small><div class="row" style="flex-wrap:wrap;margin-top:7px">${links.map((x,i)=>`<a href="https://www.google.com/search?q=${encodeURIComponent(x[1])}" target="_blank" rel="noopener">${x[0]}</a>${i<3?'<span>·</span>':''}`).join('')}</div></div>`}).join('');
- host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Local events: '+a.textContent+' — '+place,a.href)));
+ const host=$('eventsList');
+ const zip=localStorage.getItem('a17_zip')||'90012';
+ const radius=getRadius();
+ $('eventsIntro').textContent='Researched public events for Nov 13–19, 2026 · Downtown LA and nearby venues · default area ZIP '+zip+' / '+radius+' miles. Listings are curated, not a guaranteed complete inventory.';
+ host.innerHTML=researchedEvents.map(e=>`<div class="item"><div class="row between" style="gap:8px"><strong>${esc(e.title)}</strong><span class="pill" style="font-size:10px;padding:2px 7px;white-space:nowrap">${esc(e.type)}</span></div><small>${esc(e.date)} · ${esc(e.time)} · ${esc(e.venue)}</small><div style="margin-top:6px"><a href="${e.url}" target="_blank" rel="noopener">Event details / tickets</a></div></div>`).join('')+
+ '<div class="item"><a href="https://www.curationsla.com/events" target="_blank" rel="noopener">Browse more Los Angeles meetups and events</a><small>CurationsLA · date-led community and entertainment listings</small></div>';
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Local event: '+a.textContent,a.href)));
 }
 $('refreshEvents').onclick=renderEvents;
 
@@ -186,14 +202,27 @@ $('celebritySearchForm').addEventListener('submit',e=>{e.preventDefault();render
 $('celebritySearch').addEventListener('input',renderCelebrityNews);
 $('clearCelebritySearch').onclick=()=>{$('celebritySearch').value='';renderCelebrityNews()};
 $('refreshCelebrity').onclick=loadCelebrityNews;
+const movieData=[
+ {title:'Ebenezer',date:'Nov 13, 2026',meta:'PG-13 · Fantasy / Comedy',url:'https://www.moviefone.com/movie/ebenezer/nqW7gmTFmiPnqtn4UCvWo3/main/'},
+ {title:'How to Rob a Bank',date:'Nov 13, 2026',meta:'R · Action / Crime / Thriller',url:'https://www.moviefone.com/movie/how-to-rob-a-bank/uEHsEkH1kYRoLObSGG1eu1/main/'},
+ {title:'Victorian Psycho',date:'Nov 13, 2026',meta:'R · Horror / Thriller',url:'https://www.moviefone.com/movie/victorian-psycho/Sx8wzePmzjvpgzeHUTNa43/main/'},
+ {title:'The Cat in the Hat',date:'Nov 6, 2026',meta:'PG · Animation / Family',url:'https://www.moviefone.com/movie/the-cat-in-the-hat-animated-film/GICglO894wBo0e7UOq1n22/main/'},
+ {title:'Godzilla Minus Zero',date:'Nov 6, 2026',meta:'R · Action / Science Fiction',url:'https://www.moviefone.com/movie/godzilla-minus-zero/hHaeSNK3QhlLGDVKqEBII5/main/'},
+ {title:'Ghost Soldier',date:'Nov 11, 2026',meta:'2026 · Action / Thriller',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'Wild Horse Nine',date:'Nov 6, 2026',meta:'R · Drama',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'Drummer Boy',date:'Nov 6, 2026',meta:'2026 · Drama',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'You Can See Everything',date:'Oct 16, 2026',meta:'2026 · Drama',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'Ramayana: Rise of a Legend',date:'Nov 5, 2026',meta:'2026 · Fantasy / Epic',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'Wicker',date:'Oct 23, 2026',meta:'R · Comedy / Drama / Fantasy',url:'https://www.moviefone.com/movies/in-theaters/'},
+ {title:'Mouse',date:'Nov 13, 2026',meta:'R · Comedy / Drama',url:'https://www.moviefone.com/movies/in-theaters/'}
+];
 function renderMovies(){
- const place=getLocationLabel(),radius=getRadius(),host=$('moviesList');
- if(!place){$('moviesIntro').textContent='Set a ZIP code or use device location to find nearby movie listings.';host.innerHTML='<div class="item">Add a ZIP code first.</div>';return}
- $('moviesIntro').textContent='Theater and showtime searches near '+place+' · approximately '+radius+' miles.';
- const near=' near '+place+' within '+radius+' miles';
- const searches=[['Movies currently playing','movies now playing in theaters'+near],['Showtimes nearby','movie theater showtimes'+near+' today'],['Fandango showtimes','site:fandango.com movie showtimes'+near],['AMC theaters','AMC theaters movies showtimes'+near],['Regal theaters','Regal cinemas showtimes'+near]];
- host.innerHTML=searches.map(x=>`<div class="item"><a href="https://www.google.com/search?q=${encodeURIComponent(x[1])}" target="_blank" rel="noopener">${esc(x[0])}</a><small>Open current local listings · approximate radius</small></div>`).join('');
- host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Movie listings: '+a.textContent+' — '+place,a.href)));
+ const host=$('moviesList');
+ $('moviesIntro').textContent='Current U.S. theatrical releases · listings refreshed '+new Date(2026,10,13).toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'})+'. Local showtimes vary by theater.';
+ host.innerHTML=movieData.map(m=>`<div class="item"><div><a href="${m.url}" target="_blank" rel="noopener">${esc(m.title)}</a></div><small>In theaters · ${esc(m.date)} · ${esc(m.meta)}</small></div>`).join('')+
+ '<div class="item"><a href="https://www.moviefone.com/movies/in-theaters/" target="_blank" rel="noopener">Browse the complete current theatrical list</a><small>Source: Moviefone · updated November 13, 2026</small></div>'+
+ '<div class="item"><a href="https://www.moviefone.com/showtimes/movies-near-me/" target="_blank" rel="noopener">Check local showtimes and tickets</a><small>Enter ZIP 90012 on the showtimes page to see nearby theaters.</small></div>';
+ host.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>record('Movie: '+a.textContent,a.href)));
 }
 $('refreshMovies').onclick=renderMovies;
 
