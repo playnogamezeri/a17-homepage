@@ -395,8 +395,32 @@ async function loadNews(){
  const place=getLocationLabel(),radius=getRadius();
  $('newsLocation').textContent=place?'Local headlines for '+place+' · approximately '+radius+' miles':'Enter a US ZIP code to personalize local headlines.';
  if(!place){$('newsList').innerHTML='<div class="item">Set a ZIP code above to load local news.</div>';return}
- $('newsList').innerHTML='<div class="item">Loading recent headlines…</div>';
- try{const rss='https://news.google.com/rss/search?q='+encodeURIComponent('local news near '+place+' within '+radius+' miles')+'&hl=en-US&gl=US&ceid=US:en',api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss),r=await fetch(api),j=await r.json();if(!j.items?.length)throw Error('No stories');$('newsList').innerHTML=j.items.slice(0,6).map(x=>`<div class="item"><a href="${x.link}" target="_blank" rel="noopener">${esc(x.title)}</a><small>${esc((x.author||'News source')+' · '+(x.pubDate||''))}</small></div>`).join('');document.querySelectorAll('#newsList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)))}catch(e){$('newsList').innerHTML='<div class="item">Headlines could not be loaded right now. Try Refresh, or open <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>'}
+ $('newsList').innerHTML='<div class="item">Loading the latest headlines…</div>';
+ try{
+  const query='local news near '+place+' within '+radius+' miles when:7d';
+  const rss='https://news.google.com/rss/search?q='+encodeURIComponent(query)+'&hl=en-US&gl=US&ceid=US:en';
+  const api='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rss);
+  const response=await fetch(api,{cache:'no-store'});
+  if(!response.ok)throw Error('News service unavailable');
+  const feed=await response.json();
+  const items=Array.isArray(feed.items)?feed.items:[];
+  const getPublishedTime=item=>{
+   const value=Date.parse(item.pubDate||item.isoDate||'');
+   return Number.isFinite(value)?value:0;
+  };
+  const newestFirst=items.sort((a,b)=>getPublishedTime(b)-getPublishedTime(a));
+  if(!newestFirst.length)throw Error('No recent stories');
+  $('newsLocation').textContent='Local headlines for '+place+' · approximately '+radius+' miles · Updated '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  $('newsList').innerHTML=newestFirst.slice(0,10).map(item=>{
+   const published=getPublishedTime(item);
+   const dateLabel=published?new Date(published).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):(item.pubDate||'Publication time unavailable');
+   const source=item.author||item.source||'News source';
+   return `<div class="item"><a href="${esc(item.link||'https://news.google.com/')}" target="_blank" rel="noopener">${esc(item.title||'Untitled news story')}</a><small>${esc(source+' · '+dateLabel)}</small></div>`;
+  }).join('');
+  document.querySelectorAll('#newsList a').forEach(a=>a.addEventListener('click',()=>record(a.textContent,a.href)));
+ }catch(e){
+  $('newsList').innerHTML='<div class="item">The latest headlines could not be loaded right now. Try Refresh in a moment, or open <a href="https://news.google.com/" target="_blank" rel="noopener">Google News</a>.</div>';
+ }
 }
 async function saveZip(){
  const zip=$('zipCode').value.trim();if(!/^[0-9]{5}(?:-[0-9]{4})?$/.test(zip)){$('locationStatus').textContent='Please enter a valid 5-digit US ZIP code.';return}
